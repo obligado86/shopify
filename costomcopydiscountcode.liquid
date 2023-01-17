@@ -1,0 +1,23 @@
+<div class="container">
+<div class="row">
+<div class="col">
+<label for="welcome-code-alert" class="center col-form-label">Welcome to nowenastore.com Shop and save 10% OFF from your first order. Enjoy Shopping.&#127881;&#127881;&#127881;</label>
+</div>
+<div class="col input-group">
+<input type="text" value="SAVE10" class="center col" id="inputCode"><button id="welcome-code-alert" class="btn btn-secondary " onclick="copyToClipboard()">Copy CODE</button>
+</div>
+</div>
+</div>
+
+<script>
+function copyToClipboard() {
+ var copyText = document.getElementById("inputCode");
+
+copyText.select();
+  copyText.setSelectionRange(0, 99999);
+
+navigator.clipboard.writeText(copyText.value);
+
+alert("Copied Code: " + copyText.value);
+}
+</script>
