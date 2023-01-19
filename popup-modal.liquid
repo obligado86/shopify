@@ -1,0 +1,303 @@
+<!-- need to install bootstrap on this to your theme liquid
+works with any shopify theme preferable to dawn theme. Other themes might require a little bit ajustment to the sizings 
+Purpose:
+-create welcome note and welcome promotional code to customers
+-to boost subscription
+features: 
+- fixed side button left or right. fully costomizable color
+- costomizable modal or popup
+- built with css coding
+- built with Javascript
+- with promo discount code input and copy to clipboard button -->
+
+{%- style -%}
+  .fixed-button-placement {
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 90%;
+    margin: 0 auto;
+  }
+
+  .sticky-button {
+    display: relative;
+    position: fixed;
+    top: {{ section.settings.button-placer-height-adjustment }}%;
+    {{ section.settings.button-placement }}: {{ section.settings.button-placer-side-ajustment }}rem;
+    float: {{ section.settings.button-placement }};
+    color: {{ section.settings.button-text-color }};
+    font-size: 19px;
+    font-weight: {{ section.settings.button-font-text-weight }};
+    padding: 0 3rem;
+    z-index: 5;
+    rotate: {{ section.settings.button-rotation }};
+    background-color: {{ section.settings.main-button-color }};
+    border: none;
+    border-radius: 1rem;
+  }
+
+  .newsletter-form-placement{
+    margin: 4px;
+  }
+
+  .sticky-button:hover {
+    transform: scale(1.15);
+    background-color: {{ section.settings.button-text-color }};
+    color: {{ section.settings.main-button-color }};
+  }
+
+  @media (max-width:820px) {
+    .sticky-button {
+      transform: scale(0.8);
+    }
+  }
+
+  @media (max-width:420px) {
+    .sticky-button {
+      transform: scale(0.7);
+    }
+  }
+{%- endstyle -%}
+
+<div class="fixed-button-placement"> 
+ <button type="button" class="sticky-button" id="button-modal-opener" data-bs-toggle="modal" data-bs-target="#discountCodeModal">
+   {{ section.settings.modal-button-label }}
+ </button>
+</div>
+{%- for block in section.blocks -%}
+<div class="modal fade" id="discountCodeModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h4 class="modal-title">{{ block.settings.popup-header }}</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="col">
+          <label for="welcome-code-alert" class="col col-form-label center">{{ block.settings.popup-body-text }}</label>
+        </div>
+        {%- if block.settings.copy-text-input == true -%}
+          <div class="col input-group">
+            <input type="text" value="{{ block.settings.discount-code-value }}" class="center col" id="inputCopyCode">
+            <button id="welcome-code-alert" class="btn btn-secondary col-2" onclick="copyToClipboard()">Copy</button>
+          </div>
+        {%- endif -%}
+        {%- if block.settings.enable-newsletter-form == true -%}
+          <div class="newsletter-form-placement">
+            {%- form 'customer', id: 'ContactFooter', class: 'footer__newsletter newsletter-form' -%}
+            <input type="hidden" name="contact[tags]" value="newsletter">
+            <div class="newsletter-form__field-wrapper">
+              <div class="field">
+                <input
+                  id="NewsletterForm--{{ section.id }}"
+                  type="email"
+                  name="contact[email]"
+                  class="field__input"
+                  value="{{ form.email }}"
+                  aria-required="true"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  autocomplete="email"
+                  {% if form.errors %}
+                    autofocus
+                    aria-invalid="true"
+                    aria-describedby="ContactFooter-error"
+                  {% elsif form.posted_successfully? %}
+                    aria-describedby="ContactFooter-success"
+                  {% endif %}
+                  placeholder="{{ 'newsletter.label' | t }}"
+                  required
+                >
+                <label class="field__label" for="NewsletterForm--{{ section.id }}">
+                  {{ 'newsletter.label' | t }}
+                </label>
+                <button type="submit" class="newsletter-form__button field__button" name="commit" id="Subscribe" aria-label="{{ 'newsletter.button_label' | t }}">
+                  {% render 'icon-arrow' %}
+                </button>
+              </div>
+              {%- if form.errors -%}
+                <small class="newsletter-form__message form__message" id="ContactFooter-error">{% render 'icon-error' %}{{ form.errors.translated_fields['email'] | capitalize }} {{ form.errors.messages['email'] }}</small>
+              {%- endif -%}
+            </div>
+            {%- if form.posted_successfully? -%}
+              <h3 class="newsletter-form__message newsletter-form__message--success form__message" id="ContactFooter-success" tabindex="-1" autofocus>{% render 'icon-success' %}{{ 'newsletter.success' | t }}</h3>
+            {%- endif -%}
+          {%- endform -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+{%- endfor -%}
+
+<!-- Java script here preferable works better within head section on shopify base theme liquid -->
+
+<script>
+      function copyToClipboard() {
+        let copyText = document.getElementById("inputCopyCode");
+
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+
+        navigator.clipboard.writeText(copyText.value);
+
+        alert("Copied Code: " + copyText.value);
+      };
+</script>
+
+<!-- end of java script -->
+
+{% schema %}
+  {
+    "name": "Popup modal",
+    "class": "popupModal",
+    "settings": [
+      {
+        "type": "text",
+        "id": "modal-button-label",
+        "default": "Click Here",
+        "label": "button opener label"
+      },
+      {
+        "type": "select",
+        "id": "button-font-text-weight",
+        "options": [
+          {
+            "value": "normal",
+            "label": "normal"
+          },
+          {
+            "value": "bold",
+            "label": "bold"
+          }
+        ],
+        "default": "normal",
+        "label": "font style"
+      },
+      {
+        "type": "color",
+        "id": "main-button-color",
+        "default": "#fff",
+        "label": "Button color"
+      },
+      {
+        "type": "color",
+        "id": "button-text-color",
+        "default": "#000000",
+        "label": "Text color"
+      },
+      {
+        "type": "select",
+        "id": "button-placement",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          }
+        ],
+        "default": "left",
+        "label": "button placement"
+      },
+      {
+        "type": "select",
+        "id": "button-rotation",
+        "options": [
+          {
+            "value": "90deg",
+            "label": "Clockwise"
+          },
+          {
+            "value": "-90deg",
+            "label": "Counter Clockwise"
+          }
+        ],
+        "default": "90deg",
+        "label": "button rotation"
+      },
+      {
+        "type": "range",
+        "id": "button-placer-side-ajustment",
+        "min": -30,
+        "max": 0,
+        "step": 1,
+        "default": 0,
+        "label": "ajust edge placement"
+      },
+      {
+        "type": "range",
+        "id": "button-placer-height-adjustment",
+        "min": 20,
+        "max": 80,
+        "step": 1,
+        "default": 50,
+        "label": "Height placement"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "heading",
+        "name": "popup",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "popup-header",
+            "default": "Popups",
+            "label": "heading" 
+          },
+          {
+            "type": "text",
+            "id": "popup-body-text",
+            "label": "Body Text",
+            "default": "Your text here..."
+          },
+          {
+            "type": "checkbox",
+            "id": "copy-text-input",
+            "label": "enable copy code placer?",
+            "default": false
+          },
+          {
+            "type": "text",
+            "id": "discount-code-value",
+            "label": "discount Code",
+            "default": "CODE here"
+          },
+          {
+            "type": "checkbox",
+            "id": "enable-newsletter-form",
+            "label": "enable subcribe to newsletter form?",
+            "default": false
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": {
+          "en": "Popup Modal"
+        },
+        "category": {
+          "en": "Main"
+        },
+        "blocks": [
+          {
+            "type": "heading"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}
