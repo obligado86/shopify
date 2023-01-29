@@ -125,11 +125,11 @@ hope you like it and helps your shopify business journey feel free to leave a co
                 </button>
               </div>
               {%- if form.errors -%}
-                <small class="newsletter-form__message form__message" id="ContactFooter-error">{% render 'icon-error' %}{{ form.errors.translated_fields['email'] | capitalize }} {{ form.errors.messages['email'] }}</small>
+                <script>alert("Error. Email must be invalid. Check to see if any characters are misspelt or capitalized.")</script>
               {%- endif -%}
             </div>
             {%- if form.posted_successfully? -%}
-              <h3 class="newsletter-form__message newsletter-form__message--success form__message" id="ContactFooter-success" tabindex="-1" autofocus>{% render 'icon-success' %}{{ 'newsletter.success' | t }}</h3>
+              <script>alert("{{ block.settings.alert-succesful-message }}")</script>
             {%- endif -%}
           {%- endform -%}
           </div>
@@ -287,6 +287,12 @@ hope you like it and helps your shopify business journey feel free to leave a co
             "id": "enable-newsletter-form",
             "label": "enable subcribe to newsletter form?",
             "default": false
+          },
+          {
+            "text": "text",
+            "id": "alert-succesful-message",
+            "label": "succesful message for newsletter sign up",
+            "default": "thank you for signing up!"
           }
         ]
       }
